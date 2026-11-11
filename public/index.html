@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Feedback Form</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 40px 15px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #764ba2;
+      box-shadow: 0 0 0 0.25rem rgba(118, 75, 162, 0.25);
+    }
+    .btn-submit {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+    .btn-submit:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+      color: white;
+    }
+    .rating-stars {
+      display: flex;
+      gap: 10px;
+    }
+    .star-label {
+      cursor: pointer;
+      font-size: 24px;
+      color: #e0e0e0;
+      transition: color 0.2s ease;
+    }
+    .star-radio {
+      display: none;
+    }
+    .star-radio:checked ~ .star-label,
+    .star-label:hover,
+    .star-label:hover ~ .star-label {
+      color: #ffc107;
+    }
+    .badge-category {
+      background-color: #ede9fe;
+      color: #6d28d9;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+    .feedback-item {
+      border-left: 4px solid #764ba2;
+      background: #fdfdfd;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-7 col-md-9">
+        <div class="card p-4 p-md-5 bg-white mb-4">
+          <div class="text-center mb-4">
+            <h2 class="fw-bold text-dark">Share Your Feedback</h2>
+            <p class="text-muted">We value your thoughts and would love to hear from you!</p>
+          </div>
+
+          <div id="alertBox" class="alert d-none mb-3" role="alert"></div>
+
+          <form id="feedbackForm">
+            <div class="mb-3">
+              <label for="name" class="form-label fw-semibold">Your Name</label>
+              <input
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                placeholder="e.g. Jane Doe"
+                required
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label fw-semibold">Email Address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="e.g. jane@example.com"
+                required
+              />
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6 mb-3 mb-md-0">
+                <label for="category" class="form-label fw-semibold">Feedback Category</label>
+                <select class="form-select" id="category" name="category">
+                  <option value="General">General Feedback</option>
+                  <option value="Feature Request">Feature Request</option>
+                  <option value="Bug Report">Bug Report</option>
+                  <option value="Compliment">Compliment</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Rating</label>
+                <select class="form-select" id="rating" name="rating">
+                  <option value="5">⭐⭐⭐⭐⭐ (5 - Excellent)</option>
+                  <option value="4">⭐⭐⭐⭐ (4 - Very Good)</option>
+                  <option value="3">⭐⭐⭐ (3 - Average)</option>
+                  <option value="2">⭐⭐ (2 - Poor)</option>
+                  <option value="1">⭐ (1 - Terrible)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label for="message" class="form-label fw-semibold">Your Comments</label>
+              <textarea
+                class="form-control"
+                id="message"
+                name="message"
+                rows="4"
+                placeholder="Tell us what you liked or how we can improve..."
+                required
+              ></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-submit w-100 py-2 fs-5" id="submitBtn">
+              Submit Feedback
+            </button>
+          </form>
+        </div>
+
+        <div class="card p-4 bg-white">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0">Recent Submissions</h5>
+            <button class="btn btn-sm btn-outline-secondary" onclick="loadFeedbacks()">Refresh</button>
+          </div>
+          <div id="feedbacksList">
+            <p class="text-muted small">No feedback submitted yet. Be the first!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("feedbackForm");
+    const alertBox = document.getElementById("alertBox");
+    const submitBtn = document.getElementById("submitBtn");
+    const feedbacksList = document.getElementById("feedbacksList");
+
+    function showAlert(message, type) {
+      alertBox.className = `alert alert-${type}`;
+      alertBox.textContent = message;
+      alertBox.classList.remove("d-none");
+      setTimeout(() => alertBox.classList.add("d-none"), 5000);
+    }
+
+    async function loadFeedbacks() {
+      try {
+        const res = await fetch("/api/feedback");
+        const data = await res.json();
+        if (data.feedbacks && data.feedbacks.length > 0) {
+          feedbacksList.innerHTML = data.feedbacks.map(fb => `
+            <div class="feedback-item">
+              <div class="d-flex justify-content-between align-items-start mb-1">
+                <div>
+                  <strong>${escapeHtml(fb.name)}</strong>
+                  <span class="text-muted small">(${escapeHtml(fb.email)})</span>
+                </div>
+                <span class="badge badge-category">${escapeHtml(fb.category)}</span>
+              </div>
+              <div class="text-warning small mb-1">${"⭐".repeat(fb.rating || 5)}</div>
+              <p class="mb-1 text-secondary">${escapeHtml(fb.message)}</p>
+              <small class="text-muted">${new Date(fb.createdAt).toLocaleString()}</small>
+            </div>
+          `).join("");
+        } else {
+          feedbacksList.innerHTML = '<p class="text-muted small">No feedback submitted yet. Be the first!</p>';
+        }
+      } catch (err) {
+        console.error("Could not load feedbacks:", err);
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      const div = document.createElement("div");
+      div.innerText = text;
+      return div.innerHTML;
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      submitBtn.disabled = true;
+      submitBtn.innerText = "Submitting...";
+
+      const payload = {
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        category: document.getElementById("category").value,
+        rating: document.getElementById("rating").value,
+        message: document.getElementById("message").value.trim()
+      };
+
+      try {
+        const response = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          showAlert("Thank you! Your feedback has been received successfully.", "success");
+          form.reset();
+          loadFeedbacks();
+        } else {
+          showAlert(data.message || "Failed to submit feedback.", "danger");
+        }
+      } catch (err) {
+        showAlert("Server connection error. Please try again.", "danger");
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit Feedback";
+      }
+    });
+
+    loadFeedbacks();
+  </script>
+</body>
+</html>
