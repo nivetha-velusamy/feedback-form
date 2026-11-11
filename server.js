@@ -1,12 +1,12 @@
+
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get("/", (req, res) => {
     res.send("Feedback Server Running");
@@ -22,6 +22,6 @@ app.post("/api/feedback", (req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Feedback server running on port ${PORT}`);
 });
